@@ -66,6 +66,11 @@ All colors MUST be HSL.
     --shadow-xl: 0 20px 25px -5px hsl(222 47% 11% / 0.1);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    --neon-blue: 199 89% 48%;
+    --neon-purple: 271 81% 56%;
+    --neon-pink: 330 81% 60%;
+    --neon-green: 142 76% 36%;
   }
 
   .dark {

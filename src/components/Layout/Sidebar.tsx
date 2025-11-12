@@ -6,7 +6,8 @@ import {
   Wrench, 
   ClipboardList,
   Users,
-  BarChart3
+  BarChart3,
+  Bike
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ const menuItems = [
   { icon: ClipboardList, label: "Pedidos", path: "/orders" },
   { icon: Users, label: "Clientes", path: "/customers" },
   { icon: BarChart3, label: "Relatórios", path: "/reports" },
+  { icon: Bike, label: "🚀 Delivery", path: "/delivery" },
 ];
 
 export const Sidebar = () => {
