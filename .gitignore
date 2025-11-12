@@ -1,0 +1,28 @@
+# Dependências
+node_modules/
+
+# Ambiente
+.env
+.env.local
+
+# Build
+dist/
+build/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDEs e editores
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
