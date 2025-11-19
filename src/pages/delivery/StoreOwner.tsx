@@ -7,9 +7,9 @@ import { Link } from "react-router-dom";
 
 const StoreOwner = () => {
   const pendingOrders = [
-    { id: "#1234", customer: "João Silva", items: "3 produtos", total: 234.80, time: "5 min atrás" },
-    { id: "#1235", customer: "Maria Santos", items: "2 produtos", total: 125.00, time: "12 min atrás" },
-    { id: "#1236", customer: "Pedro Costa", items: "1 produto", total: 89.90, time: "18 min atrás" },
+    { id: "#1234", customer: "João Silva", items: "3 produtos", total: 234.8, time: "5 min atrás", eta: "14:55" },
+    { id: "#1235", customer: "Maria Santos", items: "2 produtos", total: 125.0, time: "12 min atrás", eta: "15:02" },
+    { id: "#1236", customer: "Pedro Costa", items: "1 produto", total: 89.9, time: "18 min atrás", eta: "15:10" },
   ];
 
   const metrics = [
@@ -17,6 +17,24 @@ const StoreOwner = () => {
     { label: "Em Preparo", value: "5", change: "3 novos", icon: Clock, color: "neon-purple" },
     { label: "Entregues", value: "23", change: "+8%", icon: CheckCircle2, color: "neon-green" },
     { label: "Faturamento", value: "R$ 2.4k", change: "+15%", icon: TrendingUp, color: "neon-pink" },
+  ];
+
+  const storeStatus = {
+    open: true,
+    prepTime: "25 min",
+    nextShift: "Rhodes - 18:00",
+  };
+
+  const salesBreakdown = [
+    { label: "Delivery", value: "R$ 1.5k", share: "63%" },
+    { label: "Retirada", value: "R$ 900", share: "37%" },
+    { label: "Cartão", value: "R$ 1.1k", share: "46%" },
+  ];
+
+  const quickActions = [
+    { label: "Criar cupom de 10%", description: "Ative promoção relâmpago", cta: "Gerar" },
+    { label: "Pausar entregas", description: "Liberar apenas retirada", cta: "Pausar" },
+    { label: "Abrir chat com motoboys", description: "Enviar briefing rápido", cta: "Enviar" },
   ];
 
   return (
@@ -93,23 +111,78 @@ const StoreOwner = () => {
                   </div>
 
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-primary mb-4">
+                    <p className="text-2xl font-bold text-primary mb-1">
                       R$ {order.total.toFixed(2)}
                     </p>
+                    <p className="text-xs text-muted-foreground mb-3">Entrega em {order.eta}</p>
                     <div className="space-y-2">
                       <Button className="w-full bg-gradient-to-r from-neon-green to-neon-blue">
                         Aceitar
                       </Button>
                       <Button variant="outline" className="w-full">
-                        Recusar
+                        Delegar
                       </Button>
                     </div>
+                    <Button variant="ghost" className="w-full mt-2 text-xs">
+                      Enviar nota ao motoboy
+                    </Button>
                   </div>
                 </div>
               </Card>
             ))}
           </div>
         </Card>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {salesBreakdown.map((slice) => (
+            <Card key={slice.label} className="p-4 bg-card/80 backdrop-blur-sm">
+              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{slice.label}</p>
+              <p className="text-2xl font-bold text-foreground">{slice.value}</p>
+              <p className="text-xs text-muted-foreground">{slice.share} do total</p>
+            </Card>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          <Card className="p-6 bg-gradient-to-br from-success/10 to-success/5 backdrop-blur-sm border-success/30">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-success/20 rounded-full">
+                <CheckCircle2 className="w-8 h-8 text-success" />
+              </div>
+              <div>
+                <h3 className="font-bold text-foreground text-lg">Loja {storeStatus.open ? "Aberta" : "Fechada"}</h3>
+                <p className="text-sm text-muted-foreground">Tempo médio de preparo: {storeStatus.prepTime}</p>
+                <p className="text-xs text-muted-foreground">Próxima escala: {storeStatus.nextShift}</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-neon-blue/10 to-neon-purple/10 backdrop-blur-sm border-neon-blue/30">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-neon-blue/20 rounded-full">
+                <Package className="w-8 h-8 text-neon-blue" />
+              </div>
+              <div>
+                <h3 className="font-bold text-foreground text-lg">Tempo Médio</h3>
+                <p className="text-2xl font-bold text-neon-blue">{storeStatus.prepTime}</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-card/80 backdrop-blur-sm border-border">
+            <div className="space-y-3">
+              {quickActions.map((action) => (
+                <div key={action.label} className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border/50 bg-muted/30">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{action.label}</p>
+                    <p className="text-xs text-muted-foreground">{action.description}</p>
+                  </div>
+                  <Button size="sm" variant="outline">{action.cta}</Button>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
 
         {/* Status da Loja */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">

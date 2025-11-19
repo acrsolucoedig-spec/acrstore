@@ -8,19 +8,58 @@ import { ArrowLeft, Search, ShoppingBag, MapPin, Clock, Package } from "lucide-r
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
+type ProductItem = {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+  image: string;
+};
+
+type OrderEntry = {
+  id: string;
+  status: "in_transit" | "delivered" | string;
+  items: string;
+  total: number;
+  eta: string;
+};
+
 const Customer = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const products = [
-    { id: 1, name: "Capinha iPhone 14", price: 89.90, category: "Acessórios", image: "📱" },
-    { id: 2, name: "Carregador Tipo-C", price: 45.00, category: "Carregadores", image: "🔌" },
-    { id: 3, name: "Fone Bluetooth", price: 159.90, category: "Áudio", image: "🎧" },
-    { id: 4, name: "Película Xiaomi", price: 35.00, category: "Películas", image: "🛡️" },
+  const customerProfile = {
+    name: "Camila Andrade",
+    loyalty: "Cliente Gold",
+    since: "2019",
+    favoriteStore: "TechCell Centro",
+  };
+
+  const addresses = [
+    { label: "Casa", line: "Rua das Flores, 123 - Centro", city: "São Paulo" },
+    { label: "Escritório", line: "Av. Paulista, 2222 - Bela Vista", city: "São Paulo" },
   ];
 
-  const myOrders = [
-    { id: "#1234", status: "in_transit", items: "3 produtos", total: 234.80, eta: "15 min" },
-    { id: "#1233", status: "delivered", items: "1 produto", total: 89.90, eta: "Entregue" },
+  const paymentMethods = [
+    { label: "Visa ****1234", expires: "08/27" },
+    { label: "Pix - celula@techcell.com", expires: "ativo" },
+  ];
+
+  const products: ProductItem[] = [
+    { id: 1, name: "Capinha iPhone 14", price: 89.9, category: "Acessórios", image: "📱" },
+    { id: 2, name: "Carregador Tipo-C", price: 45.0, category: "Carregadores", image: "🔌" },
+    { id: 3, name: "Fone Bluetooth", price: 159.9, category: "Áudio", image: "🎧" },
+    { id: 4, name: "Película Xiaomi", price: 35.0, category: "Películas", image: "🛡️" },
+  ];
+
+  const trackingTimeline = [
+    { label: "Pagamento aprovado", time: "14:32", meta: "Cartão ou Pix" },
+    { label: "Pedido preparado", time: "14:40", meta: "Na cozinha" },
+    { label: "Motoboy a caminho", time: "14:48", meta: "TechCell Delivery" },
+  ];
+
+  const myOrders: OrderEntry[] = [
+    { id: "#1234", status: "in_transit", items: "3 produtos", total: 234.8, eta: "15 min" },
+    { id: "#1233", status: "delivered", items: "1 produto", total: 89.9, eta: "Entregue" },
   ];
 
   const getStatusBadge = (status: string) => {
@@ -34,7 +73,7 @@ const Customer = () => {
     }
   };
 
-  const handleOrder = (product: any) => {
+  const handleOrder = (product: ProductItem) => {
     toast.success(`${product.name} adicionado ao carrinho!`);
   };
 
@@ -50,11 +89,65 @@ const Customer = () => {
           </Button>
         </Link>
 
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent">
-            Olá, Cliente! 👋
-          </h1>
-          <p className="text-muted-foreground">Faça seu pedido e receba em casa</p>
+        <div className="mb-8 grid gap-4 md:grid-cols-3">
+          <div className="md:col-span-2">
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent">
+              Olá, Cliente! 👋
+            </h1>
+            <p className="text-muted-foreground">Faça seu pedido e receba em casa com o Delivery CellParts.</p>
+          </div>
+          <Card className="p-4 bg-card/80 backdrop-blur-sm">
+            <p className="text-sm uppercase tracking-[0.4em] text-muted-foreground">Perfil</p>
+            <h2 className="text-xl font-semibold text-foreground">{customerProfile.name}</h2>
+            <p className="text-xs text-muted-foreground">{customerProfile.loyalty} · Desde {customerProfile.since}</p>
+            <p className="text-xs text-muted-foreground mt-2">Loja favorita: {customerProfile.favoriteStore}</p>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <Card className="p-4 bg-card/80 backdrop-blur-sm">
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Endereços salvos</p>
+            <div className="mt-3 space-y-3">
+              {addresses.map((address) => (
+                <div key={address.label} className="rounded-lg border border-border/40 p-3 bg-muted/40">
+                  <p className="text-sm font-semibold text-foreground">{address.label}</p>
+                  <p className="text-xs text-muted-foreground">{address.line}</p>
+                  <p className="text-xs text-muted-foreground">{address.city}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+          <Card className="p-4 bg-card/80 backdrop-blur-sm">
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Métodos de pagamento</p>
+            <div className="mt-3 space-y-3">
+              {paymentMethods.map((method) => (
+                <div key={method.label} className="flex items-center justify-between rounded-lg border border-border/40 p-3 bg-muted/40">
+                  <div>
+                    <p className="text-sm text-foreground">{method.label}</p>
+                    <p className="text-xs text-muted-foreground">{method.expires}</p>
+                  </div>
+                  <Button size="icon" variant="ghost">✏️</Button>
+                </div>
+              ))}
+            </div>
+          </Card>
+          <Card className="p-4 bg-card/80 backdrop-blur-sm">
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Timeline da entrega</p>
+            <div className="mt-3 space-y-3">
+              {trackingTimeline.map((event) => (
+                <div
+                  key={event.label}
+                  className="flex items-center justify-between rounded-lg border border-border/40 p-3 bg-muted/40"
+                >
+                  <div>
+                    <p className="text-sm text-foreground">{event.label}</p>
+                    <p className="text-xs text-muted-foreground">{event.meta}</p>
+                  </div>
+                  <p className="text-xs font-semibold text-primary">{event.time}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
         </div>
 
         {/* Meus Pedidos */}

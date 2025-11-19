@@ -7,17 +7,32 @@ import { ArrowLeft, MapPin, Navigation, DollarSign, Clock, Package, CheckCircle2
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
+type DeliveryOpportunity = {
+  id: string;
+  store: string;
+  customer: string;
+  address: string;
+  distance: string;
+  payment: number;
+  items: string;
+};
+
+type ActiveDelivery = DeliveryOpportunity & {
+  phone: string;
+};
+
 const Driver = () => {
   const [activeTab, setActiveTab] = useState<"available" | "active">("available");
+  const [locationPermissions, setLocationPermissions] = useState(true);
 
-  const availableDeliveries = [
+  const availableDeliveries: DeliveryOpportunity[] = [
     { 
       id: "#1234", 
       store: "TechCell Centro", 
       customer: "João Silva",
       address: "Rua das Flores, 123",
       distance: "2.5 km",
-      payment: 12.50,
+      payment: 12.5,
       items: "3 produtos"
     },
     { 
@@ -26,19 +41,19 @@ const Driver = () => {
       customer: "Maria Santos",
       address: "Av. Principal, 456",
       distance: "1.8 km",
-      payment: 9.00,
+      payment: 9.0,
       items: "2 produtos"
     },
   ];
 
-  const activeDelivery = {
+  const activeDelivery: ActiveDelivery = {
     id: "#1233",
     store: "TechCell Centro",
     customer: "Pedro Costa",
     address: "Rua Esperança, 789 - Apto 301",
     phone: "(11) 98765-4321",
     distance: "3.2 km",
-    payment: 15.00,
+    payment: 15.0,
     items: "1 produto"
   };
 
@@ -48,7 +63,7 @@ const Driver = () => {
     { label: "Tempo Online", value: "4h 30m", icon: Clock, color: "neon-blue" },
   ];
 
-  const acceptDelivery = (delivery: any) => {
+  const acceptDelivery = (delivery: DeliveryOpportunity) => {
     toast.success(`Entrega ${delivery.id} aceita!`);
   };
 
@@ -64,11 +79,26 @@ const Driver = () => {
           </Button>
         </Link>
 
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-neon-pink to-neon-green bg-clip-text text-transparent">
-            Painel do Motoboy 🛵
-          </h1>
-          <p className="text-muted-foreground">Suas entregas e ganhos do dia</p>
+        <div className="mb-8 grid gap-4 md:grid-cols-2">
+          <div>
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-neon-pink to-neon-green bg-clip-text text-transparent">
+              Painel do Motoboy 🛵
+            </h1>
+            <p className="text-muted-foreground">Suas entregas, rotas e ganhos do dia</p>
+          </div>
+          <div className="flex items-end justify-end">
+            <Card className="px-4 py-2 text-sm text-muted-foreground border border-border">
+              <p className="text-xs uppercase tracking-[0.3em]">GPS</p>
+              <p className={locationPermissions ? "text-success" : "text-destructive"}>
+                {locationPermissions ? "Permissão ativa" : "Ativar localização"}
+              </p>
+              {!locationPermissions && (
+                <Button size="sm" variant="outline" onClick={() => setLocationPermissions(true)}>
+                  Solicitar GPS
+                </Button>
+              )}
+            </Card>
+          </div>
         </div>
 
         {/* Estatísticas */}

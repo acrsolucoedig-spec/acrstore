@@ -1,73 +1,146 @@
-# Welcome to your Lovable project
+# ACR ERP + Delivery
 
-## Project info
+Este repositório contém o front-end do ACR ERP + Delivery, uma PWA em React/TypeScript/Tailwind com foco em vendas, delivery e motoboys.
 
-**URL**: https://lovable.dev/projects/d1c8bf8b-228f-468b-9cc4-8a25f62274d8
+## 1. Iniciar do zero (caso esteja recriando o projeto)
 
-## How can I edit this code?
+```bash
+mkdir acr-erp-delivery
+cd acr-erp-delivery
 
-There are several ways of editing your application.
+npm create vite@latest . -- --template react-ts
+```
 
-**Use Lovable**
+## 2. Instalar dependências principais
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d1c8bf8b-228f-468b-9cc4-8a25f62274d8) and start prompting.
+```bash
+npm install @supabase/supabase-js @supabase/auth-ui-react @supabase/auth-ui-shared \
+  @tanstack/react-query @tanstack/react-table \
+  @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-slot \
+  @radix-ui/react-toast @radix-ui/react-avatar @radix-ui/react-label \
+  @radix-ui/react-separator @radix-ui/react-tabs \
+  class-variance-authority clsx date-fns lucide-react react-hook-form \
+  @hookform/resolvers zod react-router-dom @radix-ui/react-switch
 
-Changes made via Lovable will be committed automatically to this repo.
+npm install -D @types/node @types/react @types/react-dom \
+  @vitejs/plugin-react autoprefixer postcss tailwindcss typescript vite
+```
 
-**Use your preferred IDE**
+## 3. Inicializar Tailwind
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```bash
+npx tailwindcss init -p
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 4. Estrutura de pastas importante
 
-Follow these steps:
+```bash
+mkdir -p src/components/ui
+mkdir -p src/{lib,context,hooks,pages,services,assets,styles,utils,types,layouts}
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 5. Configurações principais
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+`tsconfig.json` deve conter:
 
-# Step 3: Install the necessary dependencies.
-npm i
+```json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+`tailwind.config.js` utiliza o tema neon e varia entre tons de neon e degradês (veja o arquivo para a configuração atual).
+
+`src/index.css` contém as diretivas do Tailwind + variáveis de tema sombreadas (coordenadas no root e no modo `.dark`).
+
+## 6. Utilitários compartilhados
+
+- `src/lib/utils.ts`: helpers `cn`, `formatDate`, `formatCurrency`.
+- `src/lib/supabase.ts`: cria o cliente Supabase e valida variáveis de ambiente.
+
+## 7. Estrutura de UI e páginas
+
+- `components/ui`: botões, cards, toasts, tooltips, etc.
+- `layouts/NeonLayout.tsx`: envoltório principal com gradientes e fundos neon.
+- `pages`: HomeProfiles, Welcome, Dashboard, Produtos, Delivery, etc.
+
+## 8. Executar o projeto
+
+```bash
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 9. Supabase e variáveis de ambiente
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Copie `.env.example` para `.env` ou `.env.local` e defina:
 
-**Use GitHub Codespaces**
+```bash
+VITE_SUPABASE_URL=https://SEU-PROJETO.supabase.co
+VITE_SUPABASE_ANON_KEY=SUA-CHAVE-ANON
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+O `src/lib/supabase.ts` já valida esses valores e lança erro caso estejam ausentes.
 
-## What technologies are used for this project?
+### 9.1 Tabelas necessárias
 
-This project is built with:
+No Supabase, crie as tabelas abaixo no schema público (ou use o SQL editor):
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- `products` (`id` SERIAL PK, `name` TEXT, `sku` TEXT, `price` NUMERIC, `stock` INT, `category` TEXT, `status` TEXT, `description` TEXT, `created_at` TIMESTAMP DEFAULT now())
+- `orders` (`id` TEXT PK, `customer` TEXT, `items` TEXT, `total` NUMERIC, `type` TEXT CHECK (type IN ('delivery','pickup')), `status` TEXT, `address` TEXT, `date` TEXT, `created_at` TIMESTAMP DEFAULT now())
+- `service_orders` (`id` TEXT PK, `customer` TEXT, `device` TEXT, `issue` TEXT, `status` TEXT, `priority` TEXT, `date` TEXT, `created_at` TIMESTAMP DEFAULT now())
 
-## How can I deploy this project?
+### 9.2 Seeds básicas (exemplo via SQL)
 
-Simply open [Lovable](https://lovable.dev/projects/d1c8bf8b-228f-468b-9cc4-8a25f62274d8) and click on Share -> Publish.
+Use o editor de SQL do Supabase para inserir registros iniciais, por exemplo:
 
-## Can I connect a custom domain to my Lovable project?
+```sql
+insert into products (name, sku, price, stock, category, status) values
+( 'Capinha iPhone 14', 'CAP-IP14-001', 89.9, 45, 'Acessórios', 'active' ),
+( 'Carregador Tipo-C', 'CAR-TC-020', 45.0, 28, 'Carregadores', 'active' );
 
-Yes, you can!
+insert into orders (id, customer, items, total, type, status, address, date) values
+('ORD-1001', 'João Silva', '3 produtos', 234.8, 'delivery', 'pending', 'Rua das Flores, 123', '10/11/2025 14:30');
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+insert into service_orders (id, customer, device, issue, status, priority, date) values
+('OS-1001', 'Maria Santos', 'Samsung Galaxy S21', 'Bateria não carrega', 'waiting', 'medium', '10/11/2025');
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 10. Git e verificações
+
+- O repositório já possui histórico (`git status -sb` deve ficar limpo após ajustes). Sinta-se livre para usar git e GitHub como de costume.
+- Não há acesso direto ao Supabase remoto aqui; configure as chaves no arquivo `.env` e valide no ambiente de desenvolvimento.
+
+## 11. Rotas de dados e hooks React
+
+- Os hooks em `src/hooks/use-products.ts`, `use-orders.ts` e `use-service-orders.ts` consomem `fetchProducts`, `fetchOrders` e `fetchServiceOrders` (`src/lib/erp.ts`).
+- Mutations para criar/atualizar registros estão em `use-create-product.ts`, `use-update-order-status.ts` e `use-update-service-order-status.ts`, tornando a UI responsiva a `status`/`priority`.
+- Atualizações invalidam os caches via `invalidateQueries({ queryKey: [...] })` e exibem toasts (`src/hooks/use-toast.ts`).
+
+## Próximos passos sugeridos
+
+1. Ajustar as páginas restantes (`Dashboard`, `Sales`, `Orders`, `Delivery`, etc.) com dados reais.
+2. Conectar autenticação Supabase e proteger rotas onde necessário.
+3. Criar testes automatizados ou storybook para os componentes UI.
